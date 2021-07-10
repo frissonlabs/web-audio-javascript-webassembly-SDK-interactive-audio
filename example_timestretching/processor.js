@@ -4,7 +4,7 @@ class MyProcessor extends SuperpoweredWebAudio.AudioWorkletProcessor {
     // runs after the constructor
     onReady() {
         this.player = new this.Superpowered.AdvancedAudioPlayer(this.samplerate, 2, 2, 0, 0.501, 2, false);
-        SuperpoweredTrackLoader.downloadAndDecode('../track.mp3', this);
+        SuperpoweredTrackLoader.downloadAndDecode(this.audioPath, this);
     }
 
     onMessageFromMainScope(message) {

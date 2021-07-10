@@ -73,13 +73,13 @@ class SuperpoweredWebAudio {
         });
     }
 
-    async createAudioNodeAsync(url, className, onMessageFromAudioScope) {
+    async createAudioNodeAsync(url, className, onMessageFromAudioScope, options) {
         return new Promise((resolve, reject) => {
-            this.createAudioNode(url, className, resolve, onMessageFromAudioScope);
+            this.createAudioNode(url, className, resolve, onMessageFromAudioScope, options);
         });
     }
 
-    createAudioNode(url, className, callback, onMessageFromAudioScope) {
+    createAudioNode(url, className, callback, onMessageFromAudioScope, options) {
         if (!AudioWorkletHasBrokenModuleImplementation && (typeof AudioWorkletNode === 'function')) {
             this.audioContext.audioWorklet.addModule(url).then(() => {
                 class SuperpoweredNode extends AudioWorkletNode {
@@ -112,7 +112,7 @@ class SuperpoweredWebAudio {
                 node.samplerate = this.audioContext.sampleRate;
                 node.inputBuffer = this.Superpowered.createFloatArray(1024 * 2);
                 node.outputBuffer = this.Superpowered.createFloatArray(1024 * 2);
-                node.processor = new processorModule.default(this.Superpowered, onMessageFromAudioScope, node.samplerate);
+                node.processor = new processorModule.default(this.Superpowered, onMessageFromAudioScope, options.sampleRate || node.samplerate, options.audioPath);
                 node.sendMessageToAudioScope = function(message, transfer = 0) { node.processor.onMessageFromMainScope(message); }
                 node.onaudioprocess = function(e) {
                     node.processor.Superpowered.bufferToWASM(node.inputBuffer, e.inputBuffer);
@@ -133,6 +133,9 @@ if (!AudioWorkletHasBrokenModuleImplementation && (typeof AudioWorkletProcessor 
             this.port.onmessage = (event) => { this.onMessageFromMainScope(event.data); };
             this.ok = false;
             this.samplerate = options.processorOptions.samplerate;
+
+			this.audioPath = options.audioPath;
+
             this.Superpowered = new SuperpoweredGlue();
             this.Superpowered.loadFromArrayBuffer(options.processorOptions.wasmCode, this);
         }
@@ -160,10 +163,13 @@ if (!AudioWorkletHasBrokenModuleImplementation && (typeof AudioWorkletProcessor 
     SuperpoweredWebAudio.AudioWorkletProcessor = SuperpoweredAudioWorkletProcessor;
 } else {
     class SuperpoweredAudioWorkletProcessor {
-        constructor(sp, oma, sr) {
+        constructor(sp, oma, sr, ap) {
             this.loader = new SuperpoweredTrackLoader(this);
             this.Superpowered = sp;
             this.samplerate = sr;
+
+			this.audioPath = ap;
+
             this.onMessageFromAudioScope = oma;
             this.onReady();
         }

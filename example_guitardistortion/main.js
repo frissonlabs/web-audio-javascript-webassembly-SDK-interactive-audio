@@ -161,7 +161,7 @@ async function startSample() {
     content.innerText = 'Creating the audio context and node...';
     webaudioManager = new SuperpoweredWebAudio(44100, Superpowered);
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor.js', 'MyProcessor', onMessageFromAudioScope);
+    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor.js', 'MyProcessor', onMessageFromAudioScope, { audioPath: '../track.mp3'});
 
     // audioNode -> audioContext.destination (audio output)
     webaudioManager.audioContext.suspend();
@@ -184,7 +184,7 @@ async function startInput() {
     if (!micStream) return;
 
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor_live.js', 'MyProcessor', onMessageFromAudioScope);
+    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor_live.js', 'MyProcessor', onMessageFromAudioScope, { audioPath: '../track.mp3'});
     let audioInput = webaudioManager.audioContext.createMediaStreamSource(micStream);
     audioInput.connect(audioNode);
     audioNode.connect(webaudioManager.audioContext.destination);

@@ -8,7 +8,7 @@ class MyProcessor extends SuperpoweredWebAudio.AudioWorkletProcessor {
         this.distortion.enabled = true;
         // the player
         this.player = new this.Superpowered.AdvancedAudioPlayer(this.samplerate, 2, 2, 0, 0.501, 2, false);
-        SuperpoweredTrackLoader.downloadAndDecode('../track.mp3', this);
+        SuperpoweredTrackLoader.downloadAndDecode(this.audioPath, this);
     }
 
     onMessageFromMainScope(message) {

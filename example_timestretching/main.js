@@ -74,7 +74,7 @@ async function start() {
     content.innerText = 'Creating the audio context and node...';
     webaudioManager = new SuperpoweredWebAudio(44100, Superpowered);
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor.js', 'MyProcessor', onMessageFromAudioScope);
+    audioNode = await webaudioManager.createAudioNodeAsync(currentPath + '/processor.js', 'MyProcessor', onMessageFromAudioScope, { audioPath: '../track.mp3'});
 
     // audioNode -> audioContext.destination (audio output)
     webaudioManager.audioContext.suspend();
